@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>冻结反馈 · 表格复制</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f4f6fa;color:#1d2939;font:15px/1.7 system-ui,"Microsoft YaHei",sans-serif}main{max-width:1400px;margin:36px auto;padding:0 20px}h1{font-size:28px;margin:0}p{color:#526075}.card{background:white;border:1px solid #e0e6ee;border-radius:14px;padding:22px;margin-top:20px}.toolbar{display:flex;gap:12px;flex-wrap:wrap;margin:18px 0}button{border:1px solid #cbd5e1;border-radius:8px;background:white;padding:11px 18px;font:inherit;cursor:pointer}button.primary{background:#245de5;color:white;border-color:#245de5}button:focus-visible,textarea:focus-visible{outline:3px solid #82b0ff}.notice{background:#fff8e8;border-radius:8px;padding:12px;color:#725715}#status{min-height:32px;color:#245de5}textarea{width:100%;height:220px;white-space:pre;overflow:auto;resize:vertical;border:1px solid #d5dde8;border-radius:8px;padding:12px;font:13px/1.8 monospace;background:#f9fbfd}.scroll{overflow:auto;max-height:520px}table{border-collapse:separate;border-spacing:0;font-size:13px;width:max-content}th,td{padding:10px 13px;border-right:1px solid #e6ebf1;border-bottom:1px solid #e6ebf1;text-align:left;white-space:nowrap}th{position:sticky;top:0;background:#edf2fa}tbody tr:nth-child(even){background:#f8fafd}h2{font-size:18px}.small{font-size:13px}.badge{color:#245de5;font-size:13px}@media(max-width:600px){main{padding:0 12px}.card{padding:14px}button{flex:1}}</style></head>
+<body><main><span class="badge">16 条记录 · 28 列</span><h1>冻结反馈 · 表格复制</h1><p>复制后，在 Excel / WPS / 在线表格中选中起始单元格，再粘贴。制表符分列，换行分行。</p>
+<section class="card"><h2>输入新记录</h2><p>把后台复制的编号记录粘贴到下面，格式与聊天中的记录一致；点击生成后会自动更新表格。</p><textarea id="raw-input" placeholder="例如：\n1\n会员账号\n用户姓名\n米兰\nVIP7\nWH3012\n2026-09-04 12:00:00\n..."></textarea><div class="toolbar"><button class="primary" id="generate">自动生成表格</button><button id="clear-input">清空输入</button></div><div id="parse-status" class="small" role="status" aria-live="polite"></div></section>
+<section class="card"><div class="notice">粘贴前，将目标表格的 K、L 两列卡号设为“文本”，保留完整卡号。若从其他列开始粘贴，请设置对应的卡号列。</div>
+<div class="toolbar"><button class="primary" id="copy-data">复制 16 条数据</button><button id="copy-all">复制表头及数据</button><button id="select-text">全选文本</button><button id="download">下载 TSV</button></div><div id="status" role="status" aria-live="polite">已准备好 16 行数据，可直接复制。</div><textarea id="tsv" readonly spellcheck="false" aria-label="制表符表格数据"></textarea>
+<p class="small">反馈日期沿用示例：2026-09-05；初审结果为“不通过”。重复值和登记情况的“-”为示例占位，未经核验。未提供的日期、状态、金额及派发信息留空。</p><p class="small">wu444333 未提供卡号；wy123589 姓名未解密；zgj137、ddjay86 仅提供支付宝二维码链接，无法确定账号尾四位，相关单元格留空。</p></section>
+<section class="card"><h2>数据预览</h2><p class="small">横向滚动查看全部 28 列。本网页可离线使用。</p><div class="scroll"><table id="preview" aria-label="冻结反馈数据预览"></table></div></section></main>
+<script>
+'use strict';
+const headers=['站点','反馈日期','反馈部门','冻结类型','使用类型','会员账号','用户姓名','VIP等级','后台订单号','订单金额','被冻结卡号（支付宝账号尾数4位）','清空格式卡号','重复值','银行卡是否登记申请过','被冻结日期','银行卡状态','活动一初审结果','提款10%安抚金6倍流水','存款冻结安抚金3倍流水','活动二审核结果','包赔金金额','运营审核备注','23号开始答谢红包运营填写金额','答谢红包红利填写派发状态','（安抚金+包赔金+答谢红包）','派发日期6倍（红利填写）','派发日期3倍存款冻结（红利填写）','派发日期1倍（红利填写）'];
+const source=[
+['WH2048','整卡冻结','银行卡存款','wu444333','吴祥亭','VIP8','HRK202609032206170126757','50000','','会员需要付款人流水视频，请联系财务咨询索要'],
+['WH2061','单笔冻结','银行卡提款','zhouhao2006','周浩','VIP1','HWD202609031832306848','1000','6217002950117811446','会员需要付款人的转账回单、微信聊天记录、微信实名截图，请联系财务咨询索要'],
+['','整卡冻结','银行卡提款','cxaidd521','陈旭','VIP0','MW120260904031801891681000','500','6217002180019056144','VIP等级不符合要求'],
+['WH2062','整卡冻结','银行卡提款','xuwenhui01','徐文辉','VIP6','HWD202609040604218507','3000','6215581103012167224','麻烦移步到【各类银行协助解冻新群】来咨询处理哦 谢谢'],
+['wh1053','整卡冻结','银行卡提款','yl9986','赵康玮','VIP1','HWD202609040440143832','500','6212261604004733133','状态显示为银行卡过期，并且录屏不完整'],
+['WH2057','整卡冻结','银行卡提款','he406813220','何中涛','VIP2','HWD202609032254502488','800','6231786689101786346','微信支付临时限制，联系财务风控制作游戏装备交易截图上传解除即可'],
+['wh1035','整卡冻结','银行卡提款','aksd332211','相隆天','VIP0','HWD202609022313539546','200','6217002170031151882','VIP等级不符合要求'],
+['WH2054','单笔冻结','银行卡提款','wn605566345','王念','VIP4','MW120260902003807367681100','3000','6230520470098679973','麻烦移步到【各类银行协助解冻新群】来咨询处理哦 谢谢'],
+['WH2052','整卡冻结','支付宝提款','zgj137','张广建','VIP3','HWD202609022009138937','5000','','支付宝延迟结算24小时自动恢复'],
+['WH3025','整卡冻结','银行卡提款','jakey8989','杜鹏','VIP3','HWD202609020942334316','300','6222023202050811107','会员要求存款回单，请联系财务索要即可。'],
+['wh1048','整卡冻结','银行卡提款','xzm199818','闵胜蕾','VIP4','HWD202608301110114960','5000','6221532320024337003','显示为保护性止付两天'],
+['WH3012','整卡冻结','银行卡提款','murtakip1','木尔提克普·努尔买买提','VIP7','HWD202608291149121312','50000','6217211001052208789','要求为协助验证'],
+['WH2050','整卡冻结','支付宝提款','ddjay86','唐彬彬','VIP7','HWD202608311416340892','10000','','已拒绝，反馈内容为支付宝被投诉，请联系财务处理'],
+['WH3058','单笔冻结','银行卡提款','yshyu123','于盛浩','VIP7','HWD202608311958063982','10000','6228480269020292273','显示为资金保护到期恢复，如未恢复再麻烦移步到【各类银行协助解冻新群】来咨询处理哦 谢谢'],
+['wh1053','整卡冻结','银行卡提款','hu1867980','胡俊','VIP7','HWD202608311914593402','5000','6214867986871219','会员要求为提供证明，请联系财务风控协助制作游戏装备交易截图'],
+['WH2055','整卡冻结','银行卡提款','wy123589','','VIP4','HWD202608311905282362','500','6221802400033132968','视频中显示为限制非柜面状态，引导会员前往柜台核实处理，如咨询交易内容，可解释买卖游戏装备，反馈财务风控，可协助提供交易记录']
+];
+// 空白生成器：历史示例仅保留在代码模板中，不在打开页面时显示；用户生成后才填充 rows。
+const rows=[];
+if(headers.length!==28||rows.length!==16||rows.some(row=>row.length!==28))throw new Error('表格列数校验失败');
+const toTSV=withHeader=>(withHeader?[headers,...rows]:rows).map(row=>row.join('\t')).join('\r\n');
+const field=document.getElementById('tsv'),status=document.getElementById('status');field.value=toTSV(false);
+const rawInput=document.getElementById('raw-input'),parseStatus=document.getElementById('parse-status');
+function parseRaw(text){
+ const blocks=text.replace(/\r/g,'').split(/\n\s*(?=\d+\s*\n)/).map(b=>b.trim()).filter(Boolean), parsed=[];
+ for(const block of blocks){
+  let lines=block.split('\n').map(s=>s.trim()).filter(Boolean); if(/^\d+$/.test(lines[0])) lines=lines.slice(1); if(lines.length<12) continue;
+  const n=lines.findIndex(s=>/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(s)); if(n<4) continue;
+  const account=lines[0]||''; const name=lines[1]||''; const site=lines[2]||'ML'; const vip=lines[3]||''; const dept=(lines[4]&&!/^\d{4}-/.test(lines[4]))?lines[4]:'';
+  const t1=lines[n], t2=lines[n+1]||''; const order=lines[n+2]||''; const amount=lines[n+3]||''; const orderType=lines[n+4]||''; const freeze=lines[n+5]||''; const use=lines[n+6]||''; const card=lines[n+7]||''; const bank=lines[n+8]||'';
+  const resultIndex=lines.findIndex((s,i)=>i>n+8&&(s==='拒绝'||s==='通过'||s==='不通过')); if(resultIndex<0) continue;
+  const note=lines.slice(resultIndex+3).join(''); parsed.push([site,'2026-09-05',dept,freeze,use,account,name,vip,order,amount,/^https?:/.test(card)?'':card,/^https?:/.test(card)?'':card,'-','-',t2,bank,resultIndex>=0&&lines[resultIndex]==='通过'?'通过':'不通过','','','','',note,'','','','','','']);
+ }
+ return parsed;
+}
+function renderTable(){const table=document.getElementById('preview');table.innerHTML='';const thead=document.createElement('thead'),hr=document.createElement('tr');headers.forEach(v=>{const c=document.createElement('th');c.scope='col';c.textContent=v;hr.appendChild(c)});thead.appendChild(hr);table.appendChild(thead);const tb=document.createElement('tbody');rows.forEach(r=>{const tr=document.createElement('tr');r.forEach(v=>{const c=document.createElement('td');c.textContent=v;tr.appendChild(c)});tb.appendChild(tr)});table.appendChild(tb)}
+document.getElementById('generate').addEventListener('click',()=>{const next=parseRaw(rawInput.value);if(!next.length){parseStatus.textContent='未识别到完整记录。请确认每条记录以编号开头，并包含“拒绝/通过”。';parseStatus.style.color='#b42318';return}rows.length=0;next.forEach(r=>rows.push(r));field.value=toTSV(false);renderTable();parseStatus.textContent=`已识别 ${next.length} 条记录，表格已更新。`;parseStatus.style.color='#18794e';status.textContent=`已生成 ${next.length} 条数据，可复制到表格。`});
+document.getElementById('clear-input').addEventListener('click',()=>{rawInput.value='';parseStatus.textContent=''});
+function selectText(){field.focus();field.select();field.setSelectionRange(0,field.value.length);}
+async function copy(withHeader){field.value=toTSV(withHeader);let copied=false;try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(field.value);copied=true;}}catch(error){}if(!copied){selectText();try{copied=document.execCommand('copy');}catch(error){}}status.textContent=copied?`已复制${withHeader?'表头及 ':''}16 条数据（28 列），请到表格中粘贴。`:'自动复制未成功，已选中文本，请按 Ctrl+C（Mac：⌘C）复制。';}
+document.getElementById('copy-data').addEventListener('click',()=>copy(false));
+document.getElementById('copy-all').addEventListener('click',()=>copy(true));
+document.getElementById('select-text').addEventListener('click',()=>{selectText();status.textContent='已全选，请按 Ctrl+C（Mac：⌘C）复制。';});
+document.getElementById('download').addEventListener('click',()=>{const url=URL.createObjectURL(new Blob(['\uFEFF'+toTSV(true)],{type:'text/tab-separated-values;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='冻结反馈-2026-09-05.tsv';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);status.textContent='已生成含表头的 TSV 文件。导入时请将卡号列设为文本。';});
+renderTable();
+</script></body></html>
