@@ -24,7 +24,7 @@ function parseRaw(text){
   const t1=lines[n], t2=lines[n+1]||''; const order=lines[n+2]||''; const amount=lines[n+3]||''; const orderType=lines[n+4]||''; const freeze=lines[n+5]||''; const use=lines[n+6]||''; const card=lines[n+7]||''; const bank=lines[n+8]||'';
   const resultIndex=lines.findIndex((s,i)=>i>n+8&&(s==='拒绝'||s==='通过'||s==='不通过')); if(resultIndex<0) continue;
   const note=lines.slice(resultIndex+3).join(''); const result=lines[resultIndex]==='通过'?'通过':'不通过'; const cardValue=/^https?:/.test(card)?'':card; const comfort=result==='通过'&&Number.isFinite(Number(amount))?String(Number(amount)*0.1):'';
-  const row=Array(28).fill(''); Object.assign(row,{0:'ML',1:'2026-09-05',2:dept,3:freeze,4:use,5:account,6:name,7:vip,8:order,9:amount,10:cardValue,11:cardValue,12:'-',13:'-',14:t2,15:bank,16:result,17:comfort,22:note}); parsed.push(row);
+  const row=Array(28).fill(''); Object.assign(row,{0:'ML',1:'2026-09-05',2:dept,3:freeze,4:use,5:account,6:name,7:vip,8:order,9:amount,10:cardValue,11:cardValue,12:'-',13:'-',14:t2,15:bank,16:result,17:comfort,21:note}); parsed.push(row);
  }
  return parsed;
 }
