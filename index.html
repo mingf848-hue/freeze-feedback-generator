@@ -16,10 +16,9 @@ const toTSV=withHeader=>(withHeader?[headers,...rows]:rows).map(row=>row.join('\
 const field=document.getElementById('tsv'),status=document.getElementById('status');field.value=toTSV(false);
 const rawInput=document.getElementById('raw-input'),parseStatus=document.getElementById('parse-status');
 function parseRaw(text){
- const normalized=text.replace(/\r/g,'').replace(/\t/g,'\n');
- const blocks=normalized.split(/\n\s*(?=\d+\s*\n)/).map(b=>b.trim()).filter(Boolean), parsed=[];
+ const blocks=text.replace(/\r/g,'').split(/\n\s*(?=\d+\s*\n)/).map(b=>b.trim()).filter(Boolean), parsed=[];
  for(const block of blocks){
-  let lines=block.split('\n').map(s=>s.trim()).filter(Boolean); if(/^\d+$/.test(lines[0])) lines=lines.slice(1); if(lines.length<12) continue;
+  let lines=block.replace(/\t/g,'\n').split('\n').map(s=>s.trim()).filter(Boolean); if(/^\d+$/.test(lines[0])) lines=lines.slice(1); if(lines.length<12) continue;
   const n=lines.findIndex(s=>/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(s)); if(n<4) continue;
   const account=lines[0]||''; const name=lines[1]||''; const site=lines[2]||'ML'; const vip=lines[3]||''; const dept=(lines[4]&&!/^\d{4}-/.test(lines[4]))?lines[4]:'';
   const t1=lines[n], t2=lines[n+1]||''; const order=lines[n+2]||''; const amount=lines[n+3]||''; const orderType=lines[n+4]||''; const freeze=lines[n+5]||''; const use=lines[n+6]||''; const card=lines[n+7]||''; const bank=lines[n+8]||'';
