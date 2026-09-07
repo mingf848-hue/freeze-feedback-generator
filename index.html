@@ -30,7 +30,7 @@ const source=[
 ];
 // 空白生成器：历史示例仅保留在代码模板中，不在打开页面时显示；用户生成后才填充 rows。
 const rows=[];
-if(headers.length!==28||rows.length!==16||rows.some(row=>row.length!==28))throw new Error('表格列数校验失败');
+if(headers.length!==28||rows.some(row=>row.length!==28))throw new Error('表格列数校验失败');
 const toTSV=withHeader=>(withHeader?[headers,...rows]:rows).map(row=>row.join('\t')).join('\r\n');
 const field=document.getElementById('tsv'),status=document.getElementById('status');field.value=toTSV(false);
 const rawInput=document.getElementById('raw-input'),parseStatus=document.getElementById('parse-status');
