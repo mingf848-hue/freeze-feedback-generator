@@ -16,7 +16,7 @@ const toTSV=withHeader=>(withHeader?[headers,...rows]:rows).map(row=>row.join('\
 const field=document.getElementById('tsv'),status=document.getElementById('status');field.value=toTSV(false);
 const rawInput=document.getElementById('raw-input'),parseStatus=document.getElementById('parse-status');
 function parseRaw(text){
- const blocks=text.replace(/\r/g,'').split(/\n\s*(?=\d+\s*\n)/).map(b=>b.trim()).filter(Boolean), parsed=[];
+ const blocks=text.replace(/\r/g,'').split(/\n\s*(?=\d{1,3}\s*\n)/).map(b=>b.trim()).filter(Boolean), parsed=[];
  for(const block of blocks){
   let lines=block.replace(/\t/g,'\n').split('\n').map(s=>s.trim()).filter(Boolean); if(/^\d+$/.test(lines[0])) lines=lines.slice(1); if(lines.length<12) continue;
   const n=lines.findIndex(s=>/^\d{4}-\d{2}-\d{2}\s+\d{2}:\d{2}:\d{2}$/.test(s)); if(n<4) continue;
